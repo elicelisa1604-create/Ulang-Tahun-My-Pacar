@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#3b1028">
+  <title>Happy Birthday, Sayang! 💗</title>
+  <style>
+    :root {
+      --wine: #48152f;
+      --wine-dark: #250b1b;
+      --pink: #ff8fb8;
+      --pink-light: #ffe1ec;
+      --cream: #fff8f3;
+      --gold: #ffd98a;
+      --text: #fff8fb;
+      --muted: #f3cada;
+      --card: rgba(255,255,255,.09);
+      --border: rgba(255,255,255,.17);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(ellipse at 12% 15%, rgba(255,143,184,.20), transparent 35%),
+        radial-gradient(ellipse at 90% 80%, rgba(255,217,138,.13), transparent 32%),
+        linear-gradient(145deg, var(--wine-dark), var(--wine) 55%, #6a2046);
+      overflow-x: hidden;
+    }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+    .stars, .floating-hearts { pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:0; }
+    .star { position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; opacity:.65; animation: twinkle 2.5s infinite alternate; }
+    @keyframes twinkle { from {opacity:.15; transform:scale(.7)} to {opacity:.85; transform:scale(1.4)} }
+    .heart-float { position:absolute; bottom:-40px; opacity:.0; animation: rise linear forwards; }
+    @keyframes rise { 0% { transform:translateY(0) rotate(0); opacity:0 } 12% {opacity:.7} 100% {transform:translateY(-115vh) rotate(25deg); opacity:0} }
+    .wrap { width:min(960px, 92%); margin:auto; position:relative; z-index:1; }
+    header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:20px 0; }
+    .brand { font-weight:800; letter-spacing:.4px; color:#ffe4ee; }
+    .top-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .small-btn, .btn {
+      border:1px solid var(--border); border-radius:999px; padding:10px 15px;
+      color:var(--text); background:rgba(255,255,255,.08); transition:.2s;
+    }
+    .small-btn:hover, .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,.16); }
+    main { padding:16px 0 54px; }
+    .page { display:none; animation: appear .5s ease both; }
+    .page.active { display:block; }
+    @keyframes appear { from {opacity:0; transform:translateY(12px)} to {opacity:1; transform:translateY(0)} }
+    .hero { text-align:center; padding:clamp(35px,8vw,85px) 0 60px; }
+    .eyebrow { text-transform:uppercase; letter-spacing:3px; color:var(--gold); font-size:.76rem; font-weight:800; }
+    h1 { font-size:clamp(2.6rem,8vw,5.8rem); line-height:1.02; margin:16px 0; letter-spacing:-2px; }
+    h1 .script { color:var(--pink); text-shadow:0 7px 28px rgba(255,143,184,.18); }
+    h2 { font-size:clamp(1.8rem,5vw,3rem); margin:10px 0 12px; }
+    p { line-height:1.75; color:var(--muted); }
+    .hero p { max-width:600px; margin:0 auto 25px; font-size:1.05rem; }
+    .big-heart { font-size:clamp(4rem,13vw,7.5rem); display:inline-block; filter:drop-shadow(0 12px 25px #ff8fb84c); animation: beat 1.3s infinite; }
+    @keyframes beat { 0%,100% {transform:scale(1)} 15% {transform:scale(1.12)} 30% {transform:scale(1)} 45% {transform:scale(1.08)} }
+    .btn-primary { color:#46132d; border:0; background:linear-gradient(135deg,#ffd98a,#ff9fc2); font-weight:900; padding:14px 23px; box-shadow:0 12px 28px #14061145; }
+    .btn-primary:hover { background:linear-gradient(135deg,#ffe6a9,#ffb3d0); }
+    .dots { display:flex; justify-content:center; gap:7px; margin:0 0 24px; }
+    .dot { width:7px; height:7px; border-radius:50%; background:#ffffff38; }
+    .dot.on { background:var(--gold); width:23px; border-radius:9px; }
+    .panel { background:var(--card); border:1px solid var(--border); border-radius:26px; padding:clamp(20px,5vw,38px); box-shadow:0 20px 70px #1406112b; backdrop-filter:blur(10px); }
+    .center { text-align:center; }
+    .kicker { color:var(--gold); font-weight:800; font-size:.82rem; letter-spacing:1.5px; text-transform:uppercase; }
+    .question { font-size:1.25rem; font-weight:800; margin:20px 0; color:#fff7fb; }
+    .answers { display:grid; gap:10px; max-width:560px; margin:0 auto; }
+    .answer { text-align:left; padding:14px 16px; border-radius:15px; color:var(--text); border:1px solid var(--border); background:#ffffff0c; }
+    .answer:hover { border-color:var(--pink); background:#ff8fb81b; }
+    .answer.correct { background:#3ba77a30; border-color:#74e2ad; }
+    .answer.wrong { background:#ff687b20; border-color:#ff8797; }
+    .feedback { min-height:28px; font-weight:700; color:var(--gold); margin:14px 0 0; }
+    .progress { height:6px; background:#ffffff20; border-radius:99px; overflow:hidden; margin:18px auto 0; max-width:560px; }
+    .progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--pink),var(--gold)); transition:width .3s; }
+    .game-stats { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:20px 0; }
+    .stat { background:#ffffff0e; border:1px solid var(--border); padding:10px 16px; border-radius:14px; min-width:110px; }
+    .stat strong { display:block; color:var(--gold); font-size:1.3rem; }
+    .heart-field { min-height:220px; position:relative; border:1px dashed #ffffff45; border-radius:20px; overflow:hidden; background:#240a1a40; margin:20px 0; }
+    .tap-heart { position:absolute; border:0; background:transparent; font-size:2.2rem; padding:8px; filter:drop-shadow(0 5px 8px #0003); animation: pop .2s ease; }
+    @keyframes pop { from {transform:scale(.2)} to {transform:scale(1)} }
+    .letter-envelope { font-size:5rem; cursor:pointer; display:inline-block; transition:.25s; filter:drop-shadow(0 12px 18px #1a0618aa); }
+    .letter-envelope:hover { transform:translateY(-6px) rotate(-3deg); }
+    .letter { display:none; max-width:680px; margin:22px auto 0; text-align:left; background:var(--cream); color:#632444; border-radius:18px; padding:clamp(20px,5vw,35px); box-shadow:0 18px 50px #16051150; white-space:pre-line; line-height:1.85; }
+    .letter p { color:#632444; }
+    .final-message { font-size:clamp(1.1rem,3vw,1.5rem); max-width:650px; margin:18px auto 25px; }
+    .badge { display:inline-block; border:1px solid #ffd98a70; color:var(--gold); border-radius:99px; padding:8px 13px; font-size:.85rem; }
+    footer { text-align:center; color:#e8b8ce; font-size:.82rem; padding:18px 0 30px; position:relative; z-index:1; }
+    .toast { position:fixed; left:50%; bottom:20px; transform:translate(-50%,20px); background:#fff8f3; color:#48152f; padding:12px 18px; border-radius:999px; font-weight:800; opacity:0; transition:.25s; z-index:10; max-width:90%; text-align:center; pointer-events:none; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    .confetti { position:fixed; top:-20px; z-index:8; pointer-events:none; animation: confetti-fall 3.2s linear forwards; }
+    @keyframes confetti-fall { to { transform:translateY(110vh) rotate(700deg); opacity:.2; } }
+    .hidden { display:none !important; }
+    @media (max-width:560px) {
+      header { align-items:flex-start; flex-direction:column; }
+      .hero { padding-top:35px; }
+      .panel { border-radius:21px; }
+      .small-btn { padding:8px 12px; font-size:.86rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <div class="floating-hearts" id="floatingHearts"></div>
+  <header class="wrap">
+    <div class="brand">♡ OUR LITTLE UNIVERSE</div>
+    <div class="top-actions">
+      <button class="small-btn" id="musicBtn" type="button">♫ Putar musik</button>
+      <button class="small-btn" id="muteBtn" type="button" title="Matikan atau nyalakan suara">🔊 Suara</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="eyebrow">A little surprise, just for you</div>
+        <div class="big-heart">💗</div>
+        <h1>Happy Birthday,<br><span class="script" id="heroName">Sayangku!</span></h1>
+        <p>Walaupun jarak kita belum bisa dipeluk, hari ini aku mau bikin kamu merasa disayang dari tempatku berada. Ada kejutan kecil yang sudah kusiapkan khusus untukmu. ✨</p>
+        <button class="btn btn-primary" onclick="goTo('quiz')">Buka kejutanmu 💌</button>
+        <p style="font-size:.85rem;margin-top:22px">Dibuat dengan cinta, dikirim melintasi jarak ♡</p>
+      </div>
+    </section>
+
+    <section class="page" id="page-quiz">
+      <div class="dots"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="panel center">
+        <div class="kicker">Level 1 · Seberapa kenal kita?</div>
+        <h2>Kuis kecil buat kamu 🥰</h2>
+        <p>Jawab pertanyaan ini yaa. Nggak ada nilai jelek, yang penting kita senang!</p>
+        <div id="quizArea"></div>
+        <div class="progress"><span id="quizProgress"></span></div>
+      </div>
+      <div class="center" style="margin-top:20px"><button class="btn" onclick="goTo('home')">← Kembali</button></div>
+    </section>
+
+    <section class="page" id="page-game">
+      <div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="panel center">
+        <div class="kicker">Level 2 · Mini game</div>
+        <h2>Tangkap hati buat aku! 💖</h2>
+        <p>Klik hati yang muncul di kotak sampai kamu mengumpulkan 10 hati. Anggap aja setiap hati itu satu peluk virtual dariku.</p>
+        <div class="game-stats">
+          <div class="stat">Hati terkumpul<strong id="score">0 / 10</strong></div>
+          <div class="stat">Waktu<strong id="timer">30 detik</strong></div>
+        </div>
+        <button class="btn btn-primary" id="startGameBtn" onclick="startGame()">Mulai main! 💘</button>
+        <div class="heart-field" id="heartField" aria-label="Area permainan menangkap hati">
+          <p id="gameHint" style="padding:55px 15px">Tekan “Mulai main” untuk memulai.</p>
+        </div>
+        <p class="feedback" id="gameFeedback" aria-live="polite"></p>
+        <button class="btn btn-primary hidden" id="gameNextBtn" onclick="goTo('letter')">Buka surat cinta 💌</button>
+      </div>
+      <div class="center" style="margin-top:20px"><button class="btn" onclick="goTo('quiz')">← Kembali ke kuis</button></div>
+    </section>
+
+    <section class="page" id="page-letter">
+      <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot on"></span><span class="dot"></span></div>
+      <div class="panel center">
+        <div class="kicker">Level 3 · Pesan rahasia</div>
+        <h2>Ada surat untukmu 💌</h2>
+        <p>Ketuk amplopnya pelan-pelan. Isinya mungkin sederhana, tapi ditulis dari hati.</p>
+        <button class="letter-envelope" id="envelope" onclick="openLetter()" aria-label="Buka surat cinta">💌</button>
+        <div class="letter" id="letterContent"></div>
+        <div style="margin-top:22px"><button class="btn btn-primary hidden" id="letterNextBtn" onclick="goTo('final')">Lanjut ke kejutan terakhir ✨</button></div>
+      </div>
+      <div class="center" style="margin-top:20px"><button class="btn" onclick="goTo('game')">← Kembali ke game</button></div>
+    </section>
+
+    <section class="page" id="page-final">
+      <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot on"></span></div>
+      <div class="panel center" style="padding-top:42px;padding-bottom:42px">
+        <div class="big-heart">🎂</div>
+        <div class="kicker">End of surprise · Beginning of another year</div>
+        <h2>Selamat ulang tahun,<br><span class="script" id="finalName">cintaku!</span></h2>
+        <p class="final-message" id="finalMessage"></p>
+        <div class="badge">Distance means so little when someone means so much ♡</div>
+        <p style="margin-top:25px">Kirim peluk virtualmu sekarang?</p>
+        <button class="btn btn-primary" onclick="sendHug()">Kirim peluk virtual 🫂</button>
+        <button class="btn" onclick="restart()" style="margin:8px">Ulangi dari awal ↻</button>
+      </div>
+    </section>
+  </main>
+  <footer>Made with ♡, from my side of the world to yours.</footer>
+  <div class="toast" id="toast" role="status"></div>
+  <audio id="bgMusic" loop preload="none">
+    <!-- Opsional: unggah lagu sebagai music.mp3 di folder yang sama, lalu aktifkan baris berikut -->
+    <!-- <source src="music.mp3" type="audio/mpeg"> -->
+  </audio>
+
+  <script>
+    /*
+      ==========================================================
+      BAGIAN YANG BOLEH KAMU EDIT: PERSONALISASI WEBSITE
+      Ganti tulisan di dalam tanda kutip. Jangan hapus tanda kutip.
+      ==========================================================
+    */
+    const CONFIG = {
+      namaPacar: "Sayangku", // Contoh: "Raka"
+      namaKamu: "Aku",       // Contoh: "Els"
+      judulTab: "Happy Birthday, Sayang! 💗",
+      pembuka: "Walaupun jarak kita belum bisa dipeluk, hari ini aku mau bikin kamu merasa disayang dari tempatku berada. Ada kejutan kecil yang sudah kusiapkan khusus untukmu. ✨",
+      surat: `Hai, sayangku! ❤️
+
+Selamat ulang tahun, yaa. Semoga di umur yang baru ini kamu selalu diberi kesehatan, kebahagiaan, dan banyak hal baik yang datang tanpa kamu duga.
+
+Maaf kalau hari ini aku belum bisa ada di sampingmu, belum bisa memelukmu langsung, atau merayakan hari spesialmu sambil menatap senyummu. Tapi percayalah, jarak nggak pernah membuat doaku untukmu jadi lebih sedikit.
+
+Terima kasih sudah hadir di hidupku. Terima kasih sudah menjadi seseorang yang begitu berarti. Kalau hari ini terasa berat, ingat ya, ada aku yang selalu berharap kamu baik-baik saja dan punya banyak alasan untuk tersenyum.
+
+Semoga semua impianmu satu per satu jadi nyata. Jangan terlalu keras pada diri sendiri, istirahat kalau lelah, dan tetap jadi kamu yang aku sayang.
+
+Suatu hari nanti, semoga kita bisa merayakan ulang tahunmu tanpa layar, tanpa sinyal, dan tanpa hitung-hitungan jarak. Untuk sekarang, terima dulu peluk virtual yang paling erat dari aku. 🫂💗
+
+With all my love,
+NAMA_KAMU`,
+      ucapanAkhir: "Semoga tahun ini membawa lebih banyak tawa, kesempatan baik, kesehatan, dan mimpi yang menjadi nyata. Terima kasih sudah bertahan sejauh ini. Aku bangga sama kamu, dan aku berharap bisa terus menemani cerita-ceritamu. Jarak kita memang ada, tapi kamu tetap punya tempat istimewa di hatiku. Aku sayang kamu! ❤️",
+      pertanyaanKuis: [
+        {
+          tanya: "Kalau kita lagi kangen banget, paling penting apa?",
+          opsi: ["Saling mengabari dan meluangkan waktu", "Pura-pura nggak kangen", "Menghilang berhari-hari"],
+          benar: 0,
+          respon: "Iyaaa! Komunikasi kecil pun bisa bikin jarak terasa lebih dekat 💗"
+        },
+        {
+          tanya: "Apa yang paling aku harapkan buat ulang tahunmu?",
+          opsi: ["Kamu traktir aku terus", "Kamu sehat, bahagia, dan dikelilingi hal baik", "Kamu nggak boleh tidur"],
+          benar: 1,
+          respon: "Betul! Bahagiamu juga jadi doa yang selalu aku titipkan ✨"
+        },
+        {
+          tanya: "Kalau suatu hari kita akhirnya bertemu, aku mau…",
+          opsi: ["Langsung minta oleh-oleh", "Cuma kirim chat", "Memelukmu erat dan menikmati waktu bersama"],
+          benar: 2,
+          respon: "Benar! Peluk yang selama ini cuma bisa dibayangkan 🫂"
+        }
+      ],
+      pesanSalah: "Hehe, coba lagi yaa. Ini kuis cinta, bukan ujian kok! 💞"
+    };
+
+    document.title = CONFIG.judulTab;
+    document.getElementById("heroName").textContent = CONFIG.namaPacar + "!";
+    document.getElementById("finalName").textContent = CONFIG.namaPacar + "!";
+    document.getElementById("finalMessage").textContent = CONFIG.ucapanAkhir;
+    document.getElementById("letterContent").textContent = CONFIG.surat.replaceAll("NAMA_KAMU", CONFIG.namaKamu);
+    document.querySelector("#page-home .hero p").textContent = CONFIG.pembuka;
+
+    const pageNames = ["home", "quiz", "game", "letter", "final"];
+    function goTo(name) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById("page-" + name).classList.add("active");
+      window.scrollTo({top:0, behavior:"smooth"});
+      if (name === "quiz" && !quizStarted) renderQuestion();
+      if (name === "game") resetGameIfNeeded();
+      if (name === "final") confetti(70);
+    }
+
+    // Kuis
+    let quizIndex = 0, quizScore = 0, quizStarted = false, answered = false;
+    function renderQuestion() {
+      const area = document.getElementById("quizArea");
+      const q = CONFIG.pertanyaanKuis[quizIndex];
+      if (!q) {
+        area.innerHTML = `<div class="big-heart" style="font-size:4rem">💝</div><h3>Kamu berhasil menyelesaikan kuis!</h3><p>Kamu mendapat ${quizScore} dari ${CONFIG.pertanyaanKuis.length} poin. Tapi hadiah utamanya bukan nilai, melainkan rasa sayangku. 💗</p><button class="btn btn-primary" onclick="goTo('game')">Lanjut ke mini game →</button>`;
+        document.getElementById("quizProgress").style.width = "100%";
+        return;
+      }
+      answered = false;
+      area.innerHTML = `<div class="question">${quizIndex + 1}. ${q.tanya}</div><div class="answers">${q.opsi.map((o,i)=>`<button class="answer" data-index="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div><div class="feedback" id="quizFeedback" aria-live="polite"></div>`;
+      area.querySelectorAll(".answer").forEach(btn => btn.addEventListener("click", () => answerQuestion(Number(btn.dataset.index), btn)));
+      document.getElementById("quizProgress").style.width = `${quizIndex / CONFIG.pertanyaanKuis.length * 100}%`;
+    }
+    function answerQuestion(index, btn) {
+      if (answered) return;
+      answered = true;
+      const q = CONFIG.pertanyaanKuis[quizIndex];
+      const buttons = document.querySelectorAll("#quizArea .answer");
+      buttons.forEach(b => b.disabled = true);
+      if (index === q.benar) {
+        quizScore++;
+        btn.classList.add("correct");
+        document.getElementById("quizFeedback").textContent = q.respon;
+      } else {
+        btn.classList.add("wrong");
+        buttons[q.benar].classList.add("correct");
+        document.getElementById("quizFeedback").textContent = CONFIG.pesanSalah;
+      }
+      const next = document.createElement("button");
+      next.className = "btn btn-primary";
+      next.style.marginTop = "15px";
+      next.textContent = quizIndex === CONFIG.pertanyaanKuis.length - 1 ? "Lihat hasil kuis →" : "Pertanyaan berikutnya →";
+      next.onclick = () => { quizIndex++; renderQuestion(); };
+      document.getElementById("quizArea").appendChild(next);
+    }
+    let quizInit = false;
+    Object.defineProperty(window, "quizStarted", { get: () => quizInit, set: v => quizInit = v });
+    const originalRenderQuestion = renderQuestion;
+    renderQuestion = function() { quizInit = true; originalRenderQuestion(); };
+
+    // Game tangkap hati
+    let score = 0, timeLeft = 30, gameTimer = null, gameActive = false, gameFinished = false;
+    function resetGameIfNeeded() {
+      if (gameFinished && score >= 10) document.getElementById("gameNextBtn").classList.remove("hidden");
+    }
+    function startGame() {
+      clearInterval(gameTimer);
+      score = 0; timeLeft = 30; gameActive = true; gameFinished = false;
+      document.getElementById("score").textContent = "0 / 10";
+      document.getElementById("timer").textContent = "30 detik";
+      document.getElementById("gameFeedback").textContent = "";
+      document.getElementById("gameNextBtn").classList.add("hidden");
+      document.getElementById("startGameBtn").textContent = "Main lagi ↻";
+      document.getElementById("heartField").innerHTML = "";
+      spawnHeart();
+      gameTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = timeLeft + " detik";
+        if (timeLeft <= 0) finishGame(false);
+      }, 1000);
+    }
+    function spawnHeart() {
+      if (!gameActive) return;
+      const field = document.getElementById("heartField");
+      field.innerHTML = "";
+      const heart = document.createElement("button");
+      heart.className = "tap-heart";
+      heart.type = "button";
+      heart.textContent = ["💗","💖","💘","💕","💝"][Math.floor(Math.random()*5)];
+      heart.setAttribute("aria-label", "Tangkap hati");
+      const maxX = Math.max(0, field.clientWidth - 65), maxY = Math.max(0, field.clientHeight - 70);
+      heart.style.left = Math.random()*maxX + "px";
+      heart.style.top = Math.random()*maxY + "px";
+      heart.onclick = () => {
+        if (!gameActive) return;
+        score++;
+        document.getElementById("score").textContent = `${score} / 10`;
+        if (score >= 10) finishGame(true); else spawnHeart();
+      };
+      field.appendChild(heart);
+    }
+    function finishGame(won) {
+      gameActive = false; gameFinished = true; clearInterval(gameTimer);
+      document.getElementById("heartField").innerHTML = `<p style="padding:48px 15px;font-size:1.15rem">${won ? "Yeay! Kamu berhasil mengumpulkan 10 hati! 💖" : `Waktu habis! Kamu berhasil mengumpulkan ${score} hati. Coba lagi, kamu pasti bisa! 💗`}</p>`;
+      document.getElementById("gameFeedback").textContent = won ? "Hadiah terbuka! Ada surat khusus menunggumu." : "Nggak apa-apa, cinta nggak pakai batas waktu. Main lagi yuk!";
+      document.getElementById("gameNextBtn").classList.toggle("hidden", !won);
+      if (won) confetti(35);
+    }
+
+    // Surat
+    function openLetter() {
+      document.getElementById("letterContent").style.display = "block";
+      document.getElementById("letterNextBtn").classList.remove("hidden");
+      document.getElementById("envelope").textContent = "💖";
+      document.getElementById("envelope").setAttribute("aria-label", "Surat sudah dibuka");
+      confetti(18);
+    }
+
+    function sendHug() {
+      const text = `Aku sudah menerima kejutan ulang tahunnya 🥹💗 Makasih ya, ${CONFIG.namaKamu}. Aku kirim peluk balik dari jauh! 🫂`;
+      const url = "https://wa.me/?text=" + encodeURIComponent(text);
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+    function restart() {
+      quizIndex = 0; quizScore = 0; quizInit = false; answered = false;
+      score = 0; timeLeft = 30; gameFinished = false; gameActive = false;
+      document.getElementById("gameNextBtn").classList.add("hidden");
+      document.getElementById("letterContent").style.display = "none";
+      document.getElementById("letterNextBtn").classList.add("hidden");
+      document.getElementById("envelope").textContent = "💌";
+      goTo("home");
+    }
+
+    // Musik: browser biasanya meminta pengguna menekan tombol terlebih dahulu.
+    let muted = false;
+    document.getElementById("musicBtn").addEventListener("click", async () => {
+      const audio = document.getElementById("bgMusic");
+      const source = audio.querySelector("source");
+      if (!source) {
+        showToast("Untuk musik, unggah file music.mp3 lalu aktifkan baris source di index.html 🎵");
+        return;
+      }
+      if (audio.paused) {
+        try { await audio.play(); document.getElementById("musicBtn").textContent = "♫ Jeda musik"; }
+        catch(e) { showToast("Musik belum bisa diputar. Periksa file music.mp3 ya."); }
+      } else {
+        audio.pause(); document.getElementById("musicBtn").textContent = "♫ Putar musik";
+      }
+    });
+    document.getElementById("muteBtn").addEventListener("click", () => {
+      muted = !muted;
+      document.getElementById("bgMusic").muted = muted;
+      document.getElementById("muteBtn").textContent = muted ? "🔇 Suara mati" : "🔊 Suara";
+      showToast(muted ? "Suara dimatikan" : "Suara dinyalakan");
+    });
+
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text; toast.classList.add("show");
+      clearTimeout(showToast.timeout);
+      showToast.timeout = setTimeout(() => toast.classList.remove("show"), 3200);
+    }
+    function confetti(amount=30) {
+      const symbols = ["💗","✨","💖","🌸","🎉","💕"];
+      for (let i=0; i<amount; i++) {
+        const el = document.createElement("span");
+        el.className = "confetti";
+        el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+        el.style.left = Math.random()*100 + "vw";
+        el.style.animationDelay = Math.random()*.8 + "s";
+        el.style.fontSize = (14 + Math.random()*18) + "px";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 4200);
+      }
+    }
+    // Bintang dan hati dekoratif
+    const stars = document.getElementById("stars");
+    for (let i=0; i<75; i++) {
+      const s = document.createElement("i"); s.className = "star";
+      s.style.left = Math.random()*100 + "%"; s.style.top = Math.random()*100 + "%";
+      s.style.animationDelay = Math.random()*3 + "s"; s.style.animationDuration = (1.5+Math.random()*3)+"s";
+      stars.appendChild(s);
+    }
+    setInterval(() => {
+      const h = document.createElement("span"); h.className = "heart-float";
+      h.textContent = ["♡","♥","💗","✧"][Math.floor(Math.random()*4)];
+      h.style.left = Math.random()*100 + "%"; h.style.fontSize = (14+Math.random()*24)+"px";
+      h.style.animationDuration = (7+Math.random()*6)+"s";
+      document.getElementById("floatingHearts").appendChild(h);
+      setTimeout(() => h.remove(), 14000);
+    }, 850);
+  </script>
+</body>
+</html>
