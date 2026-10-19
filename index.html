@@ -127,9 +127,9 @@
     <section class="page" id="page-quiz">
       <div class="dots"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
       <div class="panel center">
-        <div class="kicker">Level 1 · Seberapa kenal kita?</div>
-        <h2>Kuis kecil buat kamu 🥰</h2>
-        <p>Jawab pertanyaan ini yaa. Nggak ada nilai jelek, yang penting kita senang!</p>
+        <div class="kicker">Level 1 · Pertanyaan dari hati</div>
+        <h2>5 pertanyaan buat kamu 🥰</h2>
+        <p>Tulis jawabanmu dengan jujur ya, sayang. Setelah selesai, kirim ke emailku 💌</p>
         <div id="quizArea"></div>
         <div class="progress"><span id="quizProgress"></span></div>
       </div>
@@ -187,7 +187,7 @@
   <div class="toast" id="toast" role="status"></div>
   <audio id="bgMusic" loop preload="none">
     <!-- Opsional: unggah lagu sebagai music.mp3 di folder yang sama, lalu aktifkan baris berikut -->
-    <source src="music.mp3" type="audio/mpeg">
+    <!-- <source src="music.mp3" type="audio/mpeg"> -->
   </audio>
 
   <script>
@@ -217,27 +217,15 @@ Suatu hari nanti, semoga kita bisa merayakan ulang tahunmu tanpa layar, tanpa si
 With all my love,
 NAMA_KAMU`,
       ucapanAkhir: "Semoga tahun ini membawa lebih banyak tawa, kesempatan baik, kesehatan, dan mimpi yang menjadi nyata. Terima kasih sudah bertahan sejauh ini. Aku bangga sama kamu, dan aku berharap bisa terus menemani cerita-ceritamu. Jarak kita memang ada, tapi kamu tetap punya tempat istimewa di hatiku. Aku sayang kamu! ❤️",
+      // GANTI dengan alamat email milikmu agar jawaban dikirim ke sana.
+      emailPenerima: "elicelisa1604@gmail.com",
       pertanyaanKuis: [
-        {
-          tanya: "Kalau kita lagi kangen banget, paling penting apa?",
-          opsi: ["Saling mengabari dan meluangkan waktu", "Pura-pura nggak kangen", "Menghilang berhari-hari"],
-          benar: 0,
-          respon: "Iyaaa! Komunikasi kecil pun bisa bikin jarak terasa lebih dekat 💗"
-        },
-        {
-          tanya: "Apa yang paling aku harapkan buat ulang tahunmu?",
-          opsi: ["Kamu traktir aku terus", "Kamu sehat, bahagia, dan dikelilingi hal baik", "Kamu nggak boleh tidur"],
-          benar: 1,
-          respon: "Betul! Bahagiamu juga jadi doa yang selalu aku titipkan ✨"
-        },
-        {
-          tanya: "Kalau suatu hari kita akhirnya bertemu, aku mau…",
-          opsi: ["Langsung minta oleh-oleh", "Cuma kirim chat", "Memelukmu erat dan menikmati waktu bersama"],
-          benar: 2,
-          respon: "Benar! Peluk yang selama ini cuma bisa dibayangkan 🫂"
-        }
-      ],
-      pesanSalah: "Hehe, coba lagi yaa. Ini kuis cinta, bukan ujian kok! 💞"
+        "Apa yang pertama kali ingin kamu lakukan saat kita bertemu? 🫂",
+        "Hal kecil apa dariku yang paling bikin kamu senang? 💗",
+        "Kapan kamu paling kangen aku? Ceritain dong! 🥺",
+        "Kalau kita punya waktu seharian bersama, mau ngapain? 🌷",
+        "Apa harapanmu buat hubungan kita ke depannya? 💌"
+      ]
     };
 
     document.title = CONFIG.judulTab;
@@ -257,47 +245,70 @@ NAMA_KAMU`,
       if (name === "final") confetti(70);
     }
 
-    // Kuis
-    let quizIndex = 0, quizScore = 0, quizStarted = false, answered = false;
+    // Kuis isian bebas: semua jawaban disimpan selama halaman masih terbuka.
+    let quizIndex = 0, quizStarted = false;
+    const jawabanKuis = CONFIG.pertanyaanKuis.map(() => "");
+    function simpanJawaban() {
+      const field = document.getElementById("jawabanInput");
+      if (field) jawabanKuis[quizIndex] = field.value;
+    }
     function renderQuestion() {
+      quizStarted = true;
       const area = document.getElementById("quizArea");
       const q = CONFIG.pertanyaanKuis[quizIndex];
-      if (!q) {
-        area.innerHTML = `<div class="big-heart" style="font-size:4rem">💝</div><h3>Kamu berhasil menyelesaikan kuis!</h3><p>Kamu mendapat ${quizScore} dari ${CONFIG.pertanyaanKuis.length} poin. Tapi hadiah utamanya bukan nilai, melainkan rasa sayangku. 💗</p><button class="btn btn-primary" onclick="goTo('game')">Lanjut ke mini game →</button>`;
+      if (q === undefined) {
+        area.innerHTML = `<div class="big-heart" style="font-size:4rem">💝</div><h3>Terima kasih sudah menjawab semuanya!</h3><p>Klik tombol kirim untuk mengirim jawaban ke emailku. Setelah itu kamu bisa melanjutkan ke game.</p><form id="jawabanForm" method="POST" target="_blank"><input type="hidden" name="_subject" value="Jawaban kuis ulang tahun LDR 💗"><input type="hidden" name="_captcha" value="false"><div id="hiddenAnswers"></div><button class="btn btn-primary" type="submit">📩 Kirim jawaban ke email</button></form><p style="font-size:.83rem">Halaman baru mungkin terbuka untuk verifikasi FormSubmit. Jangan tutup sebelum proses selesai.</p><button class="btn" onclick="goTo('game')">Lanjut ke mini game →</button>`;
+        const form = document.getElementById("jawabanForm");
+        const email = CONFIG.emailPenerima.trim();
+        if (!email || email.includes("GANTI_DENGAN_EMAIL_KAMU") || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          form.querySelector('button[type="submit"]').disabled = true;
+          const note = document.createElement("p");
+          note.textContent = "Pemilik website belum mengisi email penerima di CONFIG.emailPenerima.";
+          form.appendChild(note);
+        } else {
+          form.action = "https://formsubmit.co/" + encodeURIComponent(email);
+        }
+        const fields = document.getElementById("hiddenAnswers");
+        CONFIG.pertanyaanKuis.forEach((q,i) => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = `${i+1}. ${q}`;
+          input.value = jawabanKuis[i];
+          fields.appendChild(input);
+        });
         document.getElementById("quizProgress").style.width = "100%";
         return;
       }
-      answered = false;
-      area.innerHTML = `<div class="question">${quizIndex + 1}. ${q.tanya}</div><div class="answers">${q.opsi.map((o,i)=>`<button class="answer" data-index="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div><div class="feedback" id="quizFeedback" aria-live="polite"></div>`;
-      area.querySelectorAll(".answer").forEach(btn => btn.addEventListener("click", () => answerQuestion(Number(btn.dataset.index), btn)));
-      document.getElementById("quizProgress").style.width = `${quizIndex / CONFIG.pertanyaanKuis.length * 100}%`;
-    }
-    function answerQuestion(index, btn) {
-      if (answered) return;
-      answered = true;
-      const q = CONFIG.pertanyaanKuis[quizIndex];
-      const buttons = document.querySelectorAll("#quizArea .answer");
-      buttons.forEach(b => b.disabled = true);
-      if (index === q.benar) {
-        quizScore++;
-        btn.classList.add("correct");
-        document.getElementById("quizFeedback").textContent = q.respon;
-      } else {
-        btn.classList.add("wrong");
-        buttons[q.benar].classList.add("correct");
-        document.getElementById("quizFeedback").textContent = CONFIG.pesanSalah;
+      area.innerHTML = "";
+      const heading = document.createElement("div");
+      heading.className = "question";
+      heading.textContent = `${quizIndex+1}. ${q}`;
+      const input = document.createElement("textarea");
+      input.id = "jawabanInput";
+      input.placeholder = "Tulis jawabanmu di sini...";
+      input.rows = 5;
+      input.value = jawabanKuis[quizIndex];
+      input.style.cssText = "display:block;width:100%;max-width:600px;margin:16px auto;padding:16px;border-radius:16px;border:1px solid #ffb3d0;background:#fff8f3;color:#48152f;font:inherit;resize:vertical";
+      const buttons = document.createElement("div");
+      buttons.style.marginTop = "18px";
+      if (quizIndex > 0) {
+        const back = document.createElement("button");
+        back.className = "btn";
+        back.textContent = "← Sebelumnya";
+        back.onclick = () => { simpanJawaban(); quizIndex--; renderQuestion(); };
+        buttons.appendChild(back);
       }
       const next = document.createElement("button");
       next.className = "btn btn-primary";
-      next.style.marginTop = "15px";
-      next.textContent = quizIndex === CONFIG.pertanyaanKuis.length - 1 ? "Lihat hasil kuis →" : "Pertanyaan berikutnya →";
-      next.onclick = () => { quizIndex++; renderQuestion(); };
-      document.getElementById("quizArea").appendChild(next);
+      next.style.marginLeft = "8px";
+      next.textContent = quizIndex === CONFIG.pertanyaanKuis.length - 1 ? "Selesai & kirim jawaban 💌" : "Selanjutnya →";
+      next.disabled = !input.value.trim();
+      input.addEventListener("input", () => next.disabled = !input.value.trim());
+      next.onclick = () => { simpanJawaban(); quizIndex++; renderQuestion(); };
+      buttons.appendChild(next);
+      area.append(heading,input,buttons);
+      document.getElementById("quizProgress").style.width = `${quizIndex / CONFIG.pertanyaanKuis.length * 100}%`;
     }
-    let quizInit = false;
-    Object.defineProperty(window, "quizStarted", { get: () => quizInit, set: v => quizInit = v });
-    const originalRenderQuestion = renderQuestion;
-    renderQuestion = function() { quizInit = true; originalRenderQuestion(); };
 
     // Game tangkap hati
     let score = 0, timeLeft = 30, gameTimer = null, gameActive = false, gameFinished = false;
@@ -363,7 +374,7 @@ NAMA_KAMU`,
       window.open(url, "_blank", "noopener,noreferrer");
     }
     function restart() {
-      quizIndex = 0; quizScore = 0; quizInit = false; answered = false;
+      quizIndex = 0; quizStarted = false; jawabanKuis.fill("");
       score = 0; timeLeft = 30; gameFinished = false; gameActive = false;
       document.getElementById("gameNextBtn").classList.add("hidden");
       document.getElementById("letterContent").style.display = "none";
